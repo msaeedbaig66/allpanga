@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="SUPABASE_URL" content="https://kweenwouvplqcleuigjb.supabase.co" />
+  <meta name="SUPABASE_ANON_KEY" content="sb_publishable_H9fPrOhk8V4K0NYkErdNuA_jYgYaF5l" />
+  <title>Allpanga Profile</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #161c24;
+      --muted: #637381;
+      --primary: #0F0F0F;
+      --primary-dark: #0F0F0F;
+      --border: rgba(145, 158, 171, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(180deg, #eef7f6 0%, var(--bg) 100%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(100%, 560px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 18px 50px rgba(22, 28, 36, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    p {
+      margin: 0 0 14px;
+      line-height: 1.6;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .email {
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .status {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      background: var(--primary);
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Welcome to Allpanga</h1>
+    <p class="label">Signed in as</p>
+    <p id="user-email" class="email">Loading...</p>
+    <p>Profile setup will be added next</p>
+    <p id="status" class="status"></p>
+    <div class="actions">
+      <button id="logout-button" type="button">Log Out</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./auth/auth.js";
+
+    const emailElement = document.getElementById("user-email");
+    const statusElement = document.getElementById("status");
+    const logoutButton = document.getElementById("logout-button");
+
+    const redirectToHome = () => {
+      window.location.replace("./index.html");
+    };
+
+    try {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
+      if (error) {
+        throw error;
+      }
+
+      const user = session?.user;
+
+      if (!user) {
+        redirectToHome();
+      } else {
+        emailElement.textContent = user.email || "No email available";
+      }
+    } catch (error) {
+      statusElement.textContent = error?.message || "Unable to verify session.";
+      redirectToHome();
+    }
+
+    logoutButton.addEventListener("click", async () => {
+      logoutButton.disabled = true;
+      statusElement.textContent = "Signing out...";
+
+      try {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+          throw error;
+        }
+
+        redirectToHome();
+      } catch (error) {
+        statusElement.textContent = error?.message || "Logout failed. Please try again.";
+        logoutButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+
+

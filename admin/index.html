@@ -1,0 +1,479 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="SUPABASE_URL" content="https://kweenwouvplqcleuigjb.supabase.co" />
+  <meta name="SUPABASE_ANON_KEY" content="sb_publishable_H9fPrOhk8V4K0NYkErdNuA_jYgYaF5l" />
+  <title>Allpanga Admin</title>
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --surface: #ffffff;
+      --line: #dfe3e8;
+      --text: #161c24;
+      --muted: #637381;
+      --brand: #0a8a7e;
+      --brand-dark: #066d63;
+      --warning: #fff4d6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .layout {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+    .sidebar {
+      background: #0f1720;
+      color: #fff;
+      padding: 28px 20px;
+    }
+    .sidebar h1 {
+      font-size: 22px;
+      margin: 0 0 8px;
+    }
+    .sidebar p {
+      color: #b6c2cf;
+      line-height: 1.5;
+      margin: 0 0 28px;
+    }
+    .nav-link {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 14px;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .main {
+      padding: 24px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status {
+      min-height: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .status.error { color: #b42318; }
+    .status.success { color: #027a48; }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-secondary {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .card p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card.full {
+      grid-column: 1 / -1;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .field-grid.columns-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .field-grid.columns-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .repeat-group {
+      display: grid;
+      gap: 14px;
+    }
+    .repeat-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fbfcfd;
+    }
+    .repeat-item h4 {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+    .gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 32, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 100;
+    }
+    .gate-card {
+      width: min(100%, 420px);
+      background: #fff;
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+    }
+    .gate-card h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+    .gate-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .gate-error {
+      min-height: 20px;
+      color: #b42318;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    body.locked {
+      overflow: hidden;
+    }
+    body.locked .layout {
+      filter: blur(10px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .hint {
+      margin-top: 8px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--warning);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (max-width: 1100px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel-grid, .field-grid, .field-grid.columns-3, .field-grid.columns-4 { grid-template-columns: 1fr; }
+      .sidebar { padding-bottom: 12px; }
+    }
+  </style>
+</head>
+<body class="locked">
+  <div class="gate-overlay" id="admin-gate">
+    <form class="gate-card" id="admin-gate-form">
+      <h2>Admin Access</h2>
+      <p>Enter the admin password to open the Allpanga About page panel.</p>
+      <label for="admin-password">Password</label>
+      <input id="admin-password" type="password" placeholder="Enter admin password" autocomplete="current-password" />
+      <div class="actions" style="margin-top:16px;">
+        <button class="btn-primary" type="submit">Open Admin</button>
+      </div>
+      <div class="gate-error" id="admin-gate-error"></div>
+    </form>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <h1>Allpanga Admin</h1>
+      <p>Start small, keep it safe, and edit the About page content from one place.</p>
+      <button class="nav-link" type="button">About Page</button>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2>About Page Content</h2>
+          <p>Texts, numbers, image paths, comments, and footer details all save to Supabase.</p>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" id="reload-button" type="button">Reload</button>
+          <button class="btn-primary" id="save-button" type="button">Save About Page</button>
+        </div>
+      </div>
+      <div class="status" id="admin-status"></div>
+      <form id="about-admin-form">
+        <div class="panel-grid">
+          <section class="card">
+            <h3>Hero</h3>
+            <p>Main heading, mission, vision, and hero image paths.</p>
+            <div class="field-grid">
+              <div>
+                <label for="hero-title">Heading</label>
+                <input id="hero-title" name="hero.title" />
+              </div>
+              <div>
+                <label for="hero-side-image">Hero side image path</label>
+                <input id="hero-side-image" name="media.hero.0" />
+              </div>
+              <div>
+                <label for="mission-title">Mission title</label>
+                <input id="mission-title" name="hero.missionTitle" />
+              </div>
+              <div>
+                <label for="hero-main-image">Hero main image path</label>
+                <input id="hero-main-image" name="media.hero.1" />
+              </div>
+            </div>
+            <div style="margin-top:14px;">
+              <label for="mission-body">Mission body</label>
+              <textarea id="mission-body" name="hero.missionBody"></textarea>
+            </div>
+            <div style="margin-top:14px;">
+              <label for="vision-title">Vision title</label>
+              <input id="vision-title" name="hero.visionTitle" />
+            </div>
+            <div style="margin-top:14px;">
+              <label for="vision-body">Vision body</label>
+              <textarea id="vision-body" name="hero.visionBody"></textarea>
+            </div>
+          </section>
+
+          <section class="card">
+            <h3>Stats</h3>
+            <p>These numbers drive the About counters on the page.</p>
+            <div class="repeat-group" id="stats-group"></div>
+          </section>
+
+          <section class="card full">
+            <h3>Trust Highlights</h3>
+            <p>This controls the colored trust section with three highlight cards.</p>
+            <div class="field-grid">
+              <div>
+                <label for="quality-title">Section title</label>
+                <input id="quality-title" name="quality.title" />
+              </div>
+              <div>
+                <label for="quality-subtitle">Section subtitle</label>
+                <input id="quality-subtitle" name="quality.subtitle" />
+              </div>
+            </div>
+            <div class="repeat-group" id="quality-cards-group" style="margin-top:16px;"></div>
+          </section>
+
+          <section class="card full">
+            <h3>Features</h3>
+            <p>Intro section, bullet points, and image paths.</p>
+            <div class="field-grid">
+              <div>
+                <label for="features-badge">Badge</label>
+                <input id="features-badge" name="features.badge" />
+              </div>
+              <div>
+                <label for="features-title">Title</label>
+                <input id="features-title" name="features.title" />
+              </div>
+              <div>
+                <label for="features-image-primary">Primary image path</label>
+                <input id="features-image-primary" name="media.features.0" />
+              </div>
+              <div>
+                <label for="features-image-secondary">Secondary image path</label>
+                <input id="features-image-secondary" name="media.features.1" />
+              </div>
+            </div>
+            <div style="margin-top:14px;">
+              <label for="features-intro">Intro</label>
+              <textarea id="features-intro" name="features.intro"></textarea>
+            </div>
+            <div class="repeat-group" id="features-bullets-group" style="margin-top:16px;"></div>
+            <div style="margin-top:14px;">
+              <label for="features-outro">Outro</label>
+              <textarea id="features-outro" name="features.outro"></textarea>
+            </div>
+          </section>
+
+          <section class="card full">
+            <h3>Testimonials</h3>
+            <p>These cards will replace the current student comment boxes when Supabase data is available.</p>
+            <div class="field-grid">
+              <div>
+                <label for="testimonials-title">Section title</label>
+                <input id="testimonials-title" name="testimonials.title" />
+              </div>
+              <div>
+                <label for="testimonials-subtitle">Section subtitle</label>
+                <input id="testimonials-subtitle" name="testimonials.subtitle" />
+              </div>
+            </div>
+            <div class="repeat-group" id="testimonials-group" style="margin-top:16px;"></div>
+          </section>
+
+          <section class="card full">
+            <h3>Focus Section</h3>
+            <p>Second feature section with video link and one main image.</p>
+            <div class="field-grid">
+              <div>
+                <label for="focus-badge">Badge</label>
+                <input id="focus-badge" name="focus.badge" />
+              </div>
+              <div>
+                <label for="focus-title">Title</label>
+                <input id="focus-title" name="focus.title" />
+              </div>
+              <div>
+                <label for="focus-image">Focus image path</label>
+                <input id="focus-image" name="media.focus.0" />
+              </div>
+              <div>
+                <label for="focus-video">Video URL</label>
+                <input id="focus-video" name="focus.videoUrl" />
+              </div>
+            </div>
+            <div style="margin-top:14px;">
+              <label for="focus-intro">Intro</label>
+              <textarea id="focus-intro" name="focus.intro"></textarea>
+            </div>
+            <div class="repeat-group" id="focus-bullets-group" style="margin-top:16px;"></div>
+            <div style="margin-top:14px;">
+              <label for="focus-outro">Outro</label>
+              <textarea id="focus-outro" name="focus.outro"></textarea>
+            </div>
+          </section>
+
+          <section class="card full">
+            <h3>Projects / Roadmap Cards</h3>
+            <p>These cards currently show the coming projects area on the About page.</p>
+            <div class="field-grid">
+              <div>
+                <label for="projects-title">Section title</label>
+                <input id="projects-title" name="projects.title" />
+              </div>
+              <div>
+                <label for="projects-subtitle">Section subtitle</label>
+                <input id="projects-subtitle" name="projects.subtitle" />
+              </div>
+            </div>
+            <div class="repeat-group" id="projects-group" style="margin-top:16px;"></div>
+          </section>
+
+          <section class="card">
+            <h3>Subscribe</h3>
+            <p>Small CTA block above the footer.</p>
+            <div>
+              <label for="subscribe-title">Title</label>
+              <input id="subscribe-title" name="subscribe.title" />
+            </div>
+            <div style="margin-top:14px;">
+              <label for="subscribe-body">Body</label>
+              <textarea id="subscribe-body" name="subscribe.body"></textarea>
+            </div>
+          </section>
+
+          <section class="card">
+            <h3>Global Footer</h3>
+            <p>This footer is shared across pages, so one save updates every page that loads the shared footer script.</p>
+            <div>
+              <label for="footer-intro">Intro</label>
+              <textarea id="footer-intro" name="footer.intro"></textarea>
+            </div>
+            <div class="field-grid" style="margin-top:14px;">
+              <div>
+                <label for="footer-contact-title">Contact heading</label>
+                <input id="footer-contact-title" name="footer.contactTitle" />
+              </div>
+              <div>
+                <label for="footer-bottom">Footer bottom</label>
+                <input id="footer-bottom" name="footer.footerBottom" />
+              </div>
+            </div>
+            <div class="field-grid" style="margin-top:14px;">
+              <div>
+                <label for="footer-address">Address</label>
+                <input id="footer-address" name="footer.address" />
+              </div>
+              <div>
+                <label for="footer-phone">Phone</label>
+                <input id="footer-phone" name="footer.phone" />
+              </div>
+              <div>
+                <label for="footer-email">Email</label>
+                <input id="footer-email" name="footer.email" />
+              </div>
+              <div>
+                <label for="footer-fax">Fax / extra line</label>
+                <input id="footer-fax" name="footer.fax" />
+              </div>
+            </div>
+            <div class="repeat-group" id="footer-categories-group" style="margin-top:16px;"></div>
+          </section>
+        </div>
+      </form>
+      <div class="hint">
+        This first admin version saves only publishable content to Supabase. Image fields accept either a project asset path like <code>assets/images/about/main.webp</code> or a full public image URL.
+      </div>
+    </main>
+  </div>
+  <script type="module" src="./about-admin.js"></script>
+</body>
+</html>
+
+
+
+
