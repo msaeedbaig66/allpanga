@@ -205,7 +205,7 @@ function setupSignupPage() {
 
     try {
       const supabase = await getSupabase();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -220,7 +220,22 @@ function setupSignupPage() {
           },
         },
       });
-      if (error) return setStatus(status, error.message, true);
+
+      const identities = data?.user?.identities;
+      const isObfuscatedExistingUser =
+        !error &&
+        data?.user &&
+        Array.isArray(identities) &&
+        identities.length === 0;
+
+      if (error || isObfuscatedExistingUser) {
+        return setStatus(
+          status,
+          "This email is already registered. Please log in or use Forgot Password.",
+          true
+        );
+      }
+
       setStatus(status, "Check your email to verify your account");
       form.reset();
       if (institutionTypeInput) institutionTypeInput.value = "";
